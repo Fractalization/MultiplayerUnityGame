@@ -6,17 +6,17 @@ using Photon.Pun;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    public float accel = 200f;         // How fast the player accelerates on the ground
+    public float accel = 400f;         // How fast the player accelerates on the ground
     [SerializeField]
     public float airAccel = 200f;      // How fast the player accelerates in the air
     [SerializeField]
     public float maxSpeed = 6.4f;      // Maximum player speed on the ground
     [SerializeField]
-    public float maxAirSpeed = 0.6f;   // "Maximum" player speed in the air
+    public float maxAirSpeed = 1f;   // "Maximum" player speed in the air
     [SerializeField]
-    public float friction = 8f;        // How fast the player decelerates on the ground
+    public float friction = 10f;        // How fast the player decelerates on the ground
     [SerializeField]
-    public float jumpForce = 5f;       // How high the player jumps
+    public float jumpForce = 1f;       // How high the player jumps
     [SerializeField]
     private LayerMask groundLayers;
 

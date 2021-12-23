@@ -5,13 +5,13 @@ using UnityEngine;
 public class PlayerMouse : MonoBehaviour
 {
     Vector2 mouseRotation = Vector2.zero;
-	public float mouseSensitivity = 3;
+	public float mouseSensitivity = 20;
 	public Rigidbody player;
 	Vector3 playerRotation;
 
 	void Start() {
 		Cursor.visible=false;
-		Cursor.lockState = CursorLockMode.Confined;
+		Cursor.lockState = CursorLockMode.Locked;
 	}
 
     // Update is called once per frame
