@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
 
 
     [SerializeField]
-    Item[] items;
+    Item[] itemHolders;
     int itemIndex;
     int previousItemIndex = -1;
 
@@ -68,13 +68,13 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(camObj.transform.position, camObj.transform.TransformDirection(Vector3.forward), out hit, 5f, itemLayers))
         {
-            //only items
+            //only itemHolders
             if(Input.GetKeyDown("e")){
                 
                 Debug.Log("Tried picking up item");
 
-                hit.transform.SetParent(itemHolder.transform);
-                hit.transform.position = itemHolder.transform.position;
+                hit.transform.SetParent(itemHolder.transform,false);
+                hit.transform.position = Vector3.zero;
                 hit.transform.localScale = Vector3.one;
                 hit.transform.gameObject.layer = 0;
                 Debug.Log("destroying "+hit.transform.GetComponentInChildren<Collider>());
@@ -114,9 +114,9 @@ public class PlayerController : MonoBehaviour
 
     void EquipItem(int index){
         itemIndex = index;
-        items[itemIndex].itemGameObject.SetActive(true);
+        itemHolders[itemIndex].itemGameObject.SetActive(true);
         if(previousItemIndex != -1){
-            items[previousItemIndex].itemGameObject.SetActive(false);
+            itemHolders[previousItemIndex].itemGameObject.SetActive(false);
         }
         previousItemIndex = itemIndex;
     }

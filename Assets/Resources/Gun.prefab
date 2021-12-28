@@ -1,67 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &446371603697192003
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4584367802972292713}
-  m_Layer: 0
-  m_Name: muni_rot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4584367802972292713
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 446371603697192003}
-  m_LocalRotation: {x: 0.017541107, y: -0.04378081, z: 0.04311828, w: 0.9979561}
-  m_LocalPosition: {x: 0.0029434646, y: -0.00052684755, z: 0.0051824227}
-  m_LocalScale: {x: 0.99999994, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8753115222657628231}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2550542524897310800
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4050465280346928791}
-  m_Layer: 0
-  m_Name: bullet_shooter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4050465280346928791
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2550542524897310800}
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: -0.00000013315805}
-  m_LocalPosition: {x: -0.008747486, y: 0, z: 0.004983953}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8753115222657628231}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3271071195365912306
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8753115222657628231}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3483570643089764940
 MeshFilter:
@@ -176,7 +114,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8753115222657628231}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3266004016626237440
 MeshFilter:
@@ -258,10 +196,8 @@ Transform:
   m_LocalScale: {x: 100, y: 100.00004, z: 100.00004}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4050465280346928791}
   - {fileID: 3325596503508810299}
   - {fileID: 5923644087651944479}
-  - {fileID: 4584367802972292713}
   - {fileID: 5307902071193024029}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -347,7 +283,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8753115222657628231}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8798997323097649389
 MeshFilter:

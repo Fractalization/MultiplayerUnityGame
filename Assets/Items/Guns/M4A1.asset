@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: M4A1
   m_EditorClassIdentifier: 
   itemName: M4A1
+  itemType: 1
