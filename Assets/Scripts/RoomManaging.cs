@@ -10,6 +10,7 @@ public class RoomManaging : MonoBehaviourPunCallbacks
     public GameObject playerManager;
     public Transform spawnPoint;
     public static RoomManaging instance;
+    public GameObject m4Prefab;
 
     void Awake()
     {
@@ -40,7 +41,13 @@ public class RoomManaging : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Connected to room");
+        bool spawnGuns = (PhotonNetwork.CurrentRoom.PlayerCount == 1);
         GameObject localPlayer = PhotonNetwork.Instantiate(playerManager.name, spawnPoint.position, Quaternion.identity);
+        if(spawnGuns){
+            PhotonNetwork.Instantiate("M4A1", new Vector3(0f,-1f,2.5f), Quaternion.identity,0);
+            PhotonNetwork.Instantiate("M4A1", new Vector3(0f,0f,2.5f), Quaternion.identity,0);
+            PhotonNetwork.Instantiate("M4A1", new Vector3(0f,1f,2.5f), Quaternion.identity,0);
+        }
     }
 
 

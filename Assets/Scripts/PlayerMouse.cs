@@ -18,7 +18,7 @@ public class PlayerMouse : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
 	{
-		if(menuActiveCheck.activeSelf)
+		if(!menuActiveCheck || menuActiveCheck.activeSelf)
 			return;
 		float xRotate = Input.GetAxis ("Mouse Y");
 		if((mouseRotation.x + -xRotate) < 30 && (mouseRotation.x + -xRotate) > -30)

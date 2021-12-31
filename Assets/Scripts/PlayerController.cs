@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     public float accel;         // How fast the player accelerates on the ground
@@ -31,8 +33,8 @@ public class PlayerController : MonoBehaviour
 
 
     [SerializeField]
-    Item[] itemHolders;
-    int itemIndex;
+    GameObject[] itemSlots;
+    int itemIndex = -1;
     int previousItemIndex = -1;
 
     
@@ -52,6 +54,12 @@ public class PlayerController : MonoBehaviour
             Destroy(GetComponent<Rigidbody>());
         }
         playerRb = GetComponent<Rigidbody>();
+
+        itemSlots[0].SetActive(true);
+        itemSlots[1].SetActive(false);
+        itemSlots[2].SetActive(false);
+        itemSlots[3].SetActive(false);
+        EquipItem(0);
     }
 
 	private void Update()
@@ -64,28 +72,75 @@ public class PlayerController : MonoBehaviour
 		    lastJumpPress = Time.time;
 		}
 
+        for(int i = 1; i <= itemSlots.Length; i++){
+            if(Input.GetKeyDown(KeyCode.Alpha0 + i)){
+                Debug.Log("pressed "+i);
+                EquipItem(i-1);
+            }
+        }
+
+        if(Input.GetKeyDown(KeyCode.Mouse0)){
+            if(itemSlots[itemIndex].transform.childCount > 0){
+                Debug.Log(itemSlots[itemIndex].GetComponentInChildren<Item>());
+                itemSlots[itemIndex].GetComponentInChildren<Item>().Use();
+            }
+        }
+
         //this is where I want to shoot a ray from the camera to pick up weapons and put it in the first available slot or drop your current weapon if not
         RaycastHit hit;
         if (Physics.Raycast(camObj.transform.position, camObj.transform.TransformDirection(Vector3.forward), out hit, 5f, itemLayers))
         {
-            //only itemHolders
+            //only itemSlots
             if(Input.GetKeyDown("e")){
                 
                 Debug.Log("Tried picking up item");
 
-                hit.transform.SetParent(itemHolder.transform,false);
-                hit.transform.position = Vector3.zero;
-                hit.transform.localScale = Vector3.one;
-                hit.transform.gameObject.layer = 0;
-                Debug.Log("destroying "+hit.transform.GetComponentInChildren<Collider>());
-                Destroy(hit.transform.GetComponentInChildren<Collider>());
+                Transform t = hit.transform;
+                Debug.Log(t.gameObject.GetComponent<Item>().itemInfo.itemType);
+                int itemType = t.gameObject.GetComponent<Item>().itemInfo.itemType;
+                int indexInserted = -1;
+                switch (itemType){
+                    case 0: //equppied slot
+                        t.SetParent(itemSlots[itemIndex].transform, true);
+                        indexInserted = itemIndex;
+                        break;
+                    case 1: //primary
+                        t.SetParent(itemSlots[0].transform, true);
+                        indexInserted = 0;
+                        break;
+                    case 2: //secondary
+                        t.SetParent(itemSlots[1].transform, true);
+                        indexInserted = 1;
+                        break;
+                    case 3: //knife
+                        t.SetParent(itemSlots[2].transform, true);
+                        indexInserted = 2;
+                        break;
+                    case 4: //nade
+                        t.SetParent(itemSlots[3].transform, true);
+                        indexInserted = 3;
+                        break;
+                }
+                // if(indexInserted > -1)
+                //     itemSlots[indexInserted].transform.GetChild(0).position = Vector3.zero;
+                t.transform.position = new Vector3(t.transform.parent.position.x + 0.6f, t.transform.parent.position.y - .6f, t.transform.parent.position.z);
+                t.transform.rotation = camObj.transform.rotation;
+                int children = t.childCount;
+                t.gameObject.layer = 0;
+                for(int i = 0; i < children; i++){
+                    t.GetChild(i).gameObject.layer = 0;
+                }
+                //Debug.Log("destroying "+hit.transform.GetComponentInChildren<Collider>());
+                // Debug.Log(itemHolder.GetComponentInChildren<Item>());
+                // Debug.Log(itemHolder.GetComponentInChildren<Item>().itemInfo);
+                //Destroy(hit.transform.GetComponentInChildren<Collider>());
                 
-                hit.transform.rotation = transform.rotation;
-                Debug.Log("destroying"+hit.rigidbody);
-                Destroy(hit.rigidbody);
+                
+                Debug.Log("destroying"+t.gameObject.GetComponent<Rigidbody>());
+                Destroy(t.gameObject.GetComponent<Rigidbody>());
             }
 
-            Debug.DrawRay(camObj.transform.position, camObj.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            //Debug.DrawRay(camObj.transform.position, camObj.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log(hit.transform.gameObject);
         }
         else
@@ -112,13 +167,21 @@ public class PlayerController : MonoBehaviour
 		playerRb.velocity = playerVelocity;
 	}
 
-    void EquipItem(int index){
+    void EquipItem(int index){//index vals: 0 = primary, 1 = secondary, 2 = melee, 3 = nade
+        if(itemIndex == index)
+            return;
         itemIndex = index;
-        itemHolders[itemIndex].itemGameObject.SetActive(true);
+        itemSlots[itemIndex].SetActive(true);
         if(previousItemIndex != -1){
-            itemHolders[previousItemIndex].itemGameObject.SetActive(false);
+            itemSlots[previousItemIndex].SetActive(false);
         }
         previousItemIndex = itemIndex;
+
+        if(view.IsMine){
+            Hashtable hash = new Hashtable();
+            hash.Add("ItemIndex",itemIndex);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        }
     }
 
 
@@ -176,28 +239,22 @@ public class PlayerController : MonoBehaviour
 
         float beforeJumpYVelocity = correctVelocity.y;
         //Apply jump
-        correctVelocity += Jump();
-
-        if (correctVelocity.y > beforeJumpYVelocity){
-            correctVelocity.y = jumpSpeed;
-        }
+        correctVelocity.y = Jump(correctVelocity.y);
         
 
         //Return
         return correctVelocity;
     }
 
-	private Vector3 Jump()
+	private float Jump(float currentVelocity)
 	{
-		Vector3 jumpVelocity = Vector3.zero;
 
 		if(Time.time < (lastJumpPress + futureJumpTimeBuffer) && CheckGround()){
 			lastJumpPress = -1f;
-            jumpVelocity.y = jumpSpeed;
-            return jumpVelocity;
+            return jumpSpeed;
 		}
 
-		return jumpVelocity;
+		return currentVelocity;
 	}
 	
 	private bool CheckGround()
@@ -206,4 +263,10 @@ public class PlayerController : MonoBehaviour
         bool result = Physics.Raycast(ray, GetComponent<Collider>().bounds.extents.y + 0.1f, groundLayers);
         return result;
 	}
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps){
+        if(!view.IsMine && targetPlayer == view.Owner){
+            EquipItem((int)changedProps["itemIndex"]);
+        }
+    }
 }
