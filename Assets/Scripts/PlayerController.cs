@@ -47,6 +47,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     Vector2 input;
     
     private void Start(){
+        PhotonNetwork.SendRate = 360;
+        PhotonNetwork.SerializationRate = 360;
         view = GetComponent<PhotonView>();
         if(!view.IsMine){
             Destroy(GetComponentInChildren<Camera>().gameObject);
@@ -79,14 +81,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.Mouse0)){
+        if(Input.GetKey(KeyCode.Mouse0)){
             if(itemSlots[itemIndex].transform.childCount > 0){
                 Debug.Log(itemSlots[itemIndex].GetComponentInChildren<Item>());
                 itemSlots[itemIndex].GetComponentInChildren<Item>().Use();
             }
         }
 
-        //this is where I want to shoot a ray from the camera to pick up weapons and put it in the first available slot or drop your current weapon if not
+        //pick up item
         RaycastHit hit;
         if (Physics.Raycast(camObj.transform.position, camObj.transform.TransformDirection(Vector3.forward), out hit, 5f, itemLayers))
         {
@@ -123,7 +125,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 }
                 // if(indexInserted > -1)
                 //     itemSlots[indexInserted].transform.GetChild(0).position = Vector3.zero;
-                t.transform.position = new Vector3(t.transform.parent.position.x + 0.6f, t.transform.parent.position.y - .6f, t.transform.parent.position.z);
+                t.transform.position = t.transform.parent.position;
                 t.transform.rotation = camObj.transform.rotation;
                 int children = t.childCount;
                 t.gameObject.layer = 0;
@@ -146,7 +148,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         else
         {
             Debug.DrawRay(camObj.transform.position, camObj.transform.TransformDirection(Vector3.forward) * 1000, Color.white);
-            Debug.Log("Did not Hit");
+            //Debug.Log("Did not Hit");
         }
         //return result;    
 	}
@@ -164,7 +166,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // Add player input
         playerVelocity += CalculateMovement(input, playerVelocity);
         // Assign new velocity to player object
-		playerRb.velocity = playerVelocity;
+        playerRb.velocity = new Vector3(playerVelocity.x, Jump(playerVelocity.y), playerVelocity.z);
 	}
 
     void EquipItem(int index){//index vals: 0 = primary, 1 = secondary, 2 = melee, 3 = nade
@@ -236,12 +238,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         //The more perpendicular the input is, the more the input velocity will be applied
         Vector3 correctVelocity = Vector3.Lerp(alignedInputVelocity, modifiedVelocity, velocityDot);
-
-        float beforeJumpYVelocity = correctVelocity.y;
-        //Apply jump
-        correctVelocity.y = Jump(correctVelocity.y);
         
-
         //Return
         return correctVelocity;
     }
@@ -250,8 +247,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
 	{
 
 		if(Time.time < (lastJumpPress + futureJumpTimeBuffer) && CheckGround()){
+            
 			lastJumpPress = -1f;
             return jumpSpeed;
+            
 		}
 
 		return currentVelocity;
@@ -260,7 +259,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 	private bool CheckGround()
 	{
         Ray ray = new Ray(transform.position, Vector3.down);
-        bool result = Physics.Raycast(ray, GetComponent<Collider>().bounds.extents.y + 0.1f, groundLayers);
+        bool result = Physics.Raycast(ray, GetComponentInChildren<Collider>().bounds.extents.y + 0.1f, groundLayers);
         return result;
 	}
 

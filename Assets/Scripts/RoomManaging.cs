@@ -11,6 +11,7 @@ public class RoomManaging : MonoBehaviourPunCallbacks
     public Transform spawnPoint;
     public static RoomManaging instance;
     public GameObject m4Prefab;
+    
 
     void Awake()
     {
@@ -20,6 +21,10 @@ public class RoomManaging : MonoBehaviourPunCallbacks
         }
         DontDestroyOnLoad(gameObject);
         instance = this;
+
+        //server update rate per second
+        PhotonNetwork.SendRate = 360;
+        PhotonNetwork.SerializationRate = 360;
     }
 
     // Start is called before the first frame update
@@ -44,9 +49,9 @@ public class RoomManaging : MonoBehaviourPunCallbacks
         bool spawnGuns = (PhotonNetwork.CurrentRoom.PlayerCount == 1);
         GameObject localPlayer = PhotonNetwork.Instantiate(playerManager.name, spawnPoint.position, Quaternion.identity);
         if(spawnGuns){
-            PhotonNetwork.Instantiate("M4A1", new Vector3(0f,-1f,2.5f), Quaternion.identity,0);
+            PhotonNetwork.Instantiate(m4Prefab.name, new Vector3(-1f,0f,2.5f), Quaternion.identity,0);
             PhotonNetwork.Instantiate("M4A1", new Vector3(0f,0f,2.5f), Quaternion.identity,0);
-            PhotonNetwork.Instantiate("M4A1", new Vector3(0f,1f,2.5f), Quaternion.identity,0);
+            PhotonNetwork.Instantiate("M4A1", new Vector3(1f,0f,2.5f), Quaternion.identity,0);
         }
     }
 
